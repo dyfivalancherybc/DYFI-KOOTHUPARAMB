@@ -41,7 +41,7 @@
       <div class="section-head">
         <h3 id="detailTitle"></h3>
         <div class="btn-row">
-          <button type="button" id="mekhalaPdfBtn" class="small">PDF</button>
+          <button type="button" id="mekhalaPdfBtn" class="small">PDF ഡൗൺലോഡ്</button>
           <button type="button" id="backBtn" class="small secondary">← തിരികെ</button>
         </div>
       </div>
@@ -53,6 +53,7 @@
               <th>ക്രമ. നം.</th>
               <th>യൂണിറ്റ്</th>
               <th>പേര്</th>
+              <th>വയസ്സ്</th>
               <th>ഫോൺ</th>
             </tr>
           </thead>
@@ -64,9 +65,7 @@
     <div class="admin-link"><a href="index.html">← എൻട്രി പേജിലേക്ക്</a></div>
   </div>
 
-  <!-- Report area: hidden on screen, shown only when printing / saving as PDF -->
-  <div id="printArea"></div>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/admin.js"></script>
 </body>
