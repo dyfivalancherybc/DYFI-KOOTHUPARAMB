@@ -26,7 +26,10 @@
     <div id="summarySection" class="card hidden">
       <div class="section-head">
         <h3>മേഖല തിരിച്ചുള്ള എണ്ണം</h3>
-        <button type="button" id="refreshBtn" class="small">REFRESH</button>
+        <div class="btn-row">
+          <button type="button" id="blockPdfBtn" class="small">ബ്ലോക്ക് റിപ്പോർട്ട് PDF</button>
+          <button type="button" id="refreshBtn" class="small secondary">REFRESH</button>
+        </div>
       </div>
       <div id="summaryStatus" class="status"></div>
       <ul id="summaryList" class="summary-list"></ul>
@@ -37,7 +40,10 @@
     <div id="detailSection" class="card hidden">
       <div class="section-head">
         <h3 id="detailTitle"></h3>
-        <button type="button" id="backBtn" class="small secondary">← തിരികെ</button>
+        <div class="btn-row">
+          <button type="button" id="mekhalaPdfBtn" class="small">PDF</button>
+          <button type="button" id="backBtn" class="small secondary">← തിരികെ</button>
+        </div>
       </div>
       <div id="detailStatus" class="status"></div>
       <div class="table-wrap">
@@ -48,7 +54,6 @@
               <th>യൂണിറ്റ്</th>
               <th>പേര്</th>
               <th>ഫോൺ</th>
-              <th>സമയം</th>
             </tr>
           </thead>
           <tbody id="detailBody"></tbody>
@@ -58,6 +63,9 @@
 
     <div class="admin-link"><a href="index.html">← എൻട്രി പേജിലേക്ക്</a></div>
   </div>
+
+  <!-- Report area: hidden on screen, shown only when printing / saving as PDF -->
+  <div id="printArea"></div>
 
   <script src="js/config.js"></script>
   <script src="js/admin.js"></script>
