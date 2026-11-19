@@ -227,9 +227,11 @@ button.secondary { background: #555; }
 
 /* Participant list: taller rows and a wide signature column */
 .sign-table td { height: 11mm; vertical-align: middle; }
-.sign-table th:last-child, .sign-table td:last-child { width: 28%; }
+.sign-table { font-size: 10pt; }
+.sign-table th:last-child, .sign-table td:last-child { width: 22%; }
 
 /* Totals at the end of each mekhala */
 .totals-box { margin-top: 16px; }
-.totals-table { width: 55%; margin-left: auto; }
+.totals-table { width: 70%; margin-left: auto; }
+.report-table .sub-total-row td { font-weight: 700; background: #fafafa; }
 .totals-table td:last-child { text-align: center; width: 30%; }
