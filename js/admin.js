@@ -11,17 +11,43 @@ const AGE_TEXT = {
   above: "40 ന് മുകളിൽ"
 };
 
+const GENDER_TEXT = {
+  male: "പുരുഷൻ",
+  female: "സ്ത്രീ",
+  other: "മറ്റുള്ളവർ"
+};
+
 function ageText(code) {
   return AGE_TEXT[code] || "-";
 }
 
-function countAges(entries) {
-  let below = 0, above = 0;
+function genderText(code) {
+  return GENDER_TEXT[code] || "-";
+}
+
+// All the counts needed for screens and reports
+function calcStats(entries) {
+  const s = {
+    total: entries.length,
+    below: 0, above: 0,
+    male: 0, mBelow: 0, mAbove: 0,
+    female: 0, fBelow: 0, fAbove: 0
+  };
   entries.forEach(en => {
-    if (en.age === "below") below++;
-    if (en.age === "above") above++;
+    if (en.age === "below") s.below++;
+    if (en.age === "above") s.above++;
+    if (en.gender === "male") {
+      s.male++;
+      if (en.age === "below") s.mBelow++;
+      if (en.age === "above") s.mAbove++;
+    }
+    if (en.gender === "female") {
+      s.female++;
+      if (en.age === "below") s.fBelow++;
+      if (en.age === "above") s.fAbove++;
+    }
   });
-  return { below, above, total: entries.length };
+  return s;
 }
 
 function setMsg(id, msg, type) {
@@ -77,7 +103,8 @@ async function loadSummary() {
       nameLine.textContent = `${i + 1}. ${item.name}`;
       const sub = document.createElement("div");
       sub.className = "summary-sub";
-      sub.textContent = `40 ൽ താഴെ: ${item.below}  |  40 ന് മുകളിൽ: ${item.above}`;
+      sub.textContent =
+        `40 ൽ താഴെ: ${item.below}  |  40 ന് മുകളിൽ: ${item.above}  |  പുരുഷൻ: ${item.male}  |  സ്ത്രീ: ${item.female}`;
       left.appendChild(nameLine);
       left.appendChild(sub);
 
@@ -92,7 +119,8 @@ async function loadSummary() {
     });
 
     document.getElementById("grandTotal").textContent =
-      `40 ൽ താഴെ: ${data.totalBelow}  |  40 ന് മുകളിൽ: ${data.totalAbove}  |  ആകെ: ${data.total}`;
+      `40 ൽ താഴെ: ${data.totalBelow}  |  40 ന് മുകളിൽ: ${data.totalAbove}  |  `
+      + `പുരുഷൻ: ${data.totalMale}  |  സ്ത്രീ: ${data.totalFemale}  |  ആകെ: ${data.total}`;
   } catch (err) {
     setMsg("summaryStatus", "നെറ്റ്‌വർക്ക് പിശക്", "error");
   }
@@ -126,13 +154,14 @@ async function loadDetails(committee) {
       setMsg("detailStatus", "എൻട്രികൾ ഒന്നുമില്ല", "");
       return;
     }
-    const c = countAges(data.entries);
+    const c = calcStats(data.entries);
     setMsg("detailStatus",
-      `40 ൽ താഴെ: ${c.below}  |  40 ന് മുകളിൽ: ${c.above}  |  ആകെ: ${c.total}`, "");
+      `40 ൽ താഴെ: ${c.below}  |  40 ന് മുകളിൽ: ${c.above}  |  `
+      + `പുരുഷൻ: ${c.male}  |  സ്ത്രീ: ${c.female}  |  ആകെ: ${c.total}`, "");
 
     data.entries.forEach((en, i) => {
       const tr = document.createElement("tr");
-      [i + 1, en.unit, en.name, ageText(en.age), en.phone].forEach(val => {
+      [i + 1, en.unit, en.name, genderText(en.gender), ageText(en.age), en.phone].forEach(val => {
         const td = document.createElement("td");
         td.textContent = val; // textContent => safe against HTML injection
         tr.appendChild(td);
@@ -193,6 +222,24 @@ function reportHeader(subtitle) {
   return wrap;
 }
 
+// Totals table: age totals, then male and female breakdowns, then grand total
+function totalsBox(entries) {
+  const c = calcStats(entries);
+  const box = el("div", null, "totals-box");
+  box.appendChild(buildTable(["വിവരം", "എണ്ണം"], [
+    { cells: ["40 ൽ താഴെ (ആകെ)", c.below] },
+    { cells: ["40 ന് മുകളിൽ (ആകെ)", c.above] },
+    { cells: ["പുരുഷൻ - 40 ൽ താഴെ", c.mBelow] },
+    { cells: ["പുരുഷൻ - 40 ന് മുകളിൽ", c.mAbove] },
+    { cells: ["ആകെ പുരുഷൻ", c.male], cls: "sub-total-row" },
+    { cells: ["സ്ത്രീ - 40 ൽ താഴെ", c.fBelow] },
+    { cells: ["സ്ത്രീ - 40 ന് മുകളിൽ", c.fAbove] },
+    { cells: ["ആകെ സ്ത്രീ", c.female], cls: "sub-total-row" },
+    { cells: ["ആകെ", c.total], cls: "total-row" }
+  ], "totals-table"));
+  return box;
+}
+
 // One mekhala: big centered name, list with signature column, totals at the end
 function mekhalaSection(name, entries) {
   const sec = el("div", null, "report-section");
@@ -202,24 +249,16 @@ function mekhalaSection(name, entries) {
     sec.appendChild(el("p", "എൻട്രികൾ ഒന്നുമില്ല", "empty-note"));
   } else {
     const rows = sortByUnit(entries).map((en, i) => ({
-      cells: [i + 1, en.unit, en.name, ageText(en.age), en.phone, ""]
+      cells: [i + 1, en.unit, en.name, genderText(en.gender), ageText(en.age), en.phone, ""]
     }));
     sec.appendChild(buildTable(
-      ["ക്രമ. നം.", "യൂണിറ്റ്", "പേര്", "വയസ്സ്", "ഫോൺ", "ഒപ്പ്"],
+      ["ക്രമ. നം.", "യൂണിറ്റ്", "പേര്", "ലിംഗം", "വയസ്സ്", "ഫോൺ", "ഒപ്പ്"],
       rows,
       "sign-table"
     ));
   }
 
-  const c = countAges(entries);
-  const box = el("div", null, "totals-box");
-  box.appendChild(buildTable(["വിവരം", "എണ്ണം"], [
-    { cells: ["40 ൽ താഴെ", c.below] },
-    { cells: ["40 ന് മുകളിൽ", c.above] },
-    { cells: ["ആകെ", c.total], cls: "total-row" }
-  ], "totals-table"));
-  sec.appendChild(box);
-
+  sec.appendChild(totalsBox(entries));
   return sec;
 }
 
@@ -292,20 +331,25 @@ document.getElementById("blockPdfBtn").addEventListener("click", async () => {
   doc.appendChild(reportHeader("ബ്ലോക്ക് റിപ്പോർട്ട്"));
 
   // First page: mekhala-wise summary with grand total
-  let gBelow = 0, gAbove = 0, gTotal = 0;
+  const allEntries = [];
   const sumRows = data.committees.map((c, i) => {
-    const k = countAges(c.entries);
-    gBelow += k.below; gAbove += k.above; gTotal += k.total;
-    return { cells: [i + 1, c.name, k.below, k.above, k.total] };
+    const k = calcStats(c.entries);
+    c.entries.forEach(en => allEntries.push(en));
+    return { cells: [i + 1, c.name, k.below, k.above, k.male, k.female, k.total] };
   });
-  sumRows.push({ cells: ["", "ആകെ", gBelow, gAbove, gTotal], cls: "total-row" });
+  const g = calcStats(allEntries);
+  sumRows.push({ cells: ["", "ആകെ", g.below, g.above, g.male, g.female, g.total], cls: "total-row" });
 
   doc.appendChild(el("h3", "മേഖല തിരിച്ചുള്ള ആകെ എണ്ണം", "section-title"));
   doc.appendChild(buildTable(
-    ["ക്രമ. നം.", "മേഖലാ കമ്മിറ്റി", "40 ൽ താഴെ", "40 ന് മുകളിൽ", "ആകെ"],
+    ["ക്രമ. നം.", "മേഖലാ കമ്മിറ്റി", "40 ൽ താഴെ", "40 ന് മുകളിൽ", "പുരുഷൻ", "സ്ത്രീ", "ആകെ"],
     sumRows,
     "summary-table"
   ));
+
+  // Block-wide breakdown (male / female by age)
+  doc.appendChild(el("h3", "ബ്ലോക്ക് ആകെ വിവരം", "section-title"));
+  doc.appendChild(totalsBox(allEntries));
 
   // Each mekhala starts on a new page: big name, list, totals
   data.committees.forEach(c => {
