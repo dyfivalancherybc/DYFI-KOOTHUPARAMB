@@ -111,6 +111,8 @@ document.getElementById("entryForm").addEventListener("submit", async (e) => {
   const committee = committeeSel.value;
   const name = document.getElementById("name").value.trim();
   const phone = document.getElementById("phone").value.trim();
+  const ageEl = document.querySelector('input[name="age"]:checked');
+  const age = ageEl ? ageEl.value : "";
 
   const usingNewUnit = unitSel.value === NEW_UNIT_VALUE;
   const unit = (usingNewUnit ? unitNew.value : unitSel.value).replace(/\s+/g, " ").trim();
@@ -118,6 +120,7 @@ document.getElementById("entryForm").addEventListener("submit", async (e) => {
   if (!committee) { setStatus("മേഖലാ കമ്മിറ്റി തിരഞ്ഞെടുക്കുക", "error"); return; }
   if (!unit) { setStatus("യൂണിറ്റ് തിരഞ്ഞെടുക്കുക / പേര് നൽകുക", "error"); return; }
   if (!name) { setStatus("പേര് നൽകുക", "error"); return; }
+  if (!age) { setStatus("വയസ്സ് തിരഞ്ഞെടുക്കുക", "error"); return; }
   if (!/^\d{10}$/.test(phone)) { setStatus("10 അക്ക ഫോൺ നമ്പർ നൽകുക", "error"); return; }
 
   btn.disabled = true;
@@ -127,6 +130,7 @@ document.getElementById("entryForm").addEventListener("submit", async (e) => {
     + `&committee=${encodeURIComponent(committee)}`
     + `&unit=${encodeURIComponent(unit)}`
     + `&name=${encodeURIComponent(name)}`
+    + `&age=${encodeURIComponent(age)}`
     + `&phone=${encodeURIComponent(phone)}`;
 
   try {
@@ -137,6 +141,7 @@ document.getElementById("entryForm").addEventListener("submit", async (e) => {
       // Keep committee + unit selected; clear only the participant fields
       document.getElementById("name").value = "";
       document.getElementById("phone").value = "";
+      document.querySelectorAll('input[name="age"]').forEach(r => r.checked = false);
       // Refresh the unit list so a newly added unit shows up, keep it selected
       await loadUnits(committee, unit);
     } else {
