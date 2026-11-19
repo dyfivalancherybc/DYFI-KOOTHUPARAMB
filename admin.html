@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>അഡ്മിൻ - രജിസ്ട്രേഷൻ വിവരങ്ങൾ</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container wide">
+    <header>
+      <h1>അഡ്മിൻ പാനൽ</h1>
+      <h2>കൂത്തുപറമ്പ് രക്തസാക്ഷി അനുസ്മരണം</h2>
+    </header>
+
+    <form id="loginForm" class="card narrow">
+      <div class="field">
+        <label for="password">PASSWORD</label>
+        <input type="password" id="password" required>
+      </div>
+      <button type="submit">LOGIN</button>
+      <div id="loginStatus" class="status"></div>
+    </form>
+
+    <!-- Summary view -->
+    <div id="summarySection" class="card hidden">
+      <div class="section-head">
+        <h3>മേഖല തിരിച്ചുള്ള എണ്ണം</h3>
+        <button type="button" id="refreshBtn" class="small">REFRESH</button>
+      </div>
+      <div id="summaryStatus" class="status"></div>
+      <ul id="summaryList" class="summary-list"></ul>
+      <div id="grandTotal" class="grand-total"></div>
+    </div>
+
+    <!-- Detail view -->
+    <div id="detailSection" class="card hidden">
+      <div class="section-head">
+        <h3 id="detailTitle"></h3>
+        <button type="button" id="backBtn" class="small secondary">← തിരികെ</button>
+      </div>
+      <div id="detailStatus" class="status"></div>
+      <div class="table-wrap">
+        <table id="detailTable" class="data-table">
+          <thead>
+            <tr>
+              <th>ക്രമ. നം.</th>
+              <th>യൂണിറ്റ്</th>
+              <th>പേര്</th>
+              <th>ഫോൺ</th>
+              <th>സമയം</th>
+            </tr>
+          </thead>
+          <tbody id="detailBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="admin-link"><a href="index.html">← എൻട്രി പേജിലേക്ക്</a></div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
