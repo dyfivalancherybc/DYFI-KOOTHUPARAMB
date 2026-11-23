@@ -252,7 +252,7 @@ function mekhalaSection(name, entries) {
       cells: [i + 1, en.unit, en.name, genderText(en.gender), ageText(en.age), en.phone, ""]
     }));
     sec.appendChild(buildTable(
-      ["ക്രമ. നം.", "യൂണിറ്റ്", "പേര്", "ലിംഗം", "വയസ്സ്", "ഫോൺ", "ഒപ്പ്"],
+      ["ക്രമ. നം.", "യൂണിറ്റ്", "പേര്", "ജെന്റർ", "വയസ്സ്", "ഫോൺ", "ഒപ്പ്"],
       rows,
       "sign-table"
     ));
